@@ -1,0 +1,49 @@
+=== LaBook
+
+1. Cadastrar (user)
+    - nome, e-mail e senha
+    - já realizar o login do usuário, fornecendo seu token de autenticação no retorno
+
+2. Logar (user)
+    - informar e-mail e senha
+    - deve conter o token de autenticação do usuário
+
+3. Fazer amizade (user)
+    - receber o token de autenticação junto com o Id do usuário com o qual se deseja fazer amizade
+    - "relação mútua": quando um usuário vira amigo de outro, esse outro "já é amigo" desse primeiro usuário (ou seja, o segundo usuário não precisa virar amigo do outro depois)
+    **Não há a necessidade de "aceitar" uma amizade.**
+
+4. Desfazer Amizade (user)
+    - segue o mesmo fluxo de fazer amizade: com o token de autenticação e o id do usuário
+    - retornar um erro caso o usuário tente desfazer uma amizade com alguém com quem não tem essa amizade registrada no banco!
+
+5. Criar post (post)
+    - informações: foto, descrição, data de criação e tipo ("normal" ou "evento")
+
+6. Ver todo o Feed (feed)
+    - todos os posts dos amigos do usuário logado
+    - devem ser retornado em ordem de criação: do mais recente ao mais antigo
+
+7. Ver apenas um tipo de post do Feed (feed)
+    - esse endpoint deve receber um tipo ("normal" ou "evento") e retornar todos os posts que sejam do tipo especificado, não apenas os de amigos.
+    - devem ser retornados em ordem de criação: do mais recente ao mais antigo
+
+## DESAFIOS
+
+8. Curtir Post
+    - receber somente o id do post e retornar uma mensagem de sucesso ou erro
+    - um usuário não pode curtir o mesmo post duas vezes
+
+9. Descurtir Post
+    - receber somente o id do post e retornar uma mensagem de sucesso ou erro
+    - um usuário não pode descurtir um post que não tenha curtido
+
+10. Comentar Post
+    - recebendo o id do post e mensagem do comentário
+    - um usuário pode, se quiser, comentar mais de uma vez o mesmo post. 
+
+11. Paginar Feed
+    - alterar o feed para que ele só exiba 5 posts por vez
+
+12. Implemente a funcionalidade que permita que o token de autenticação seja atualizado
+    - também conhecido como "Refresh Token", você deve implementar um endpoint que permita que o Frontend autalize o "access token", caso este expire
