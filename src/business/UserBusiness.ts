@@ -4,63 +4,61 @@ import { UserDatabase } from "../data/UserDatabase";
 import { Authenticator } from "../services/Authenticator";
 
 export class UserBusiness {
+  public async signUp(
+    email: string,
+    name: string,
+    password: string
+  ): Promise<string> {
+    try {
+      if (!email || !name || !password) {
+        throw new Error("Favor preencher todos os campos");
+      }
 
-    public async signUp(email: string, name:string, password: string, role: string) :Promise<string> {
-        try {
+      if (email.indexOf("@") === -1) {
+        throw new Error("E-mail inválido");
+      }
 
-            if (!email || !name || !password || !role) {
-                throw new Error("Favor preencher todos os campos");
-            }
+      if (password.length < 6) {
+        throw new Error("Sua senha deve conter mais de 6 caracteres");
+      }
 
-            if (email.indexOf("@") === -1) {
-                throw new Error("E-mail inválido");
-            }
+      const idGenerator = new IdGenerator();
+      const id = idGenerator.generate();
 
-            if (password.length < 6) {
-                throw new Error("Sua senha deve conter mais de 6 caracteres")
-            }
+      const hashManager = new HashManager();
+      const hashPassword = await hashManager.hash(password);
 
-            const idGenerator = new IdGenerator();
-            const id = idGenerator.generate();
+      const userDatabase = new UserDatabase();
+      await userDatabase.createUser(id, email, name, hashPassword);
 
-            const hashManager = new HashManager();
-            const hashPassword = await hashManager.hash(password);
+      const authenticator = new Authenticator();
+      const token = authenticator.generateToken({ id });
 
-            const userDatabase = new UserDatabase();
-            await userDatabase.createUser(
-                id,
-                email,
-                name,
-                hashPassword,
-                role
-            )
+      return token;
+    } catch (e) {
+      throw new Error(e.message || "Erro ao criar usuário.");
+    }
+  }
 
-            const authenticator = new Authenticator();
-            const token = authenticator.generateToken({id, role});
+  public async login(email: string, password: string): Promise<string> {
+    const userDatabase = new UserDatabase();
+    const user = await userDatabase.getUserByEmail(email);
 
-            return token;
+    const hashManager = new HashManager();
+    const isPasswordCorrect = await hashManager.compare(
+      password,
+      user.password
+    );
 
-        } catch(e) {
-            throw new Error(e.message || "Erro ao criar usuário.")
-        }
+    if (!isPasswordCorrect) {
+      throw new Error("Usuário ou senha incorretos");
     }
 
-    public async login (email: string, password: string) :Promise<string> {
-        const userDatabase = new UserDatabase();
-        const user = await userDatabase.getUserByEmail(email);
+    const authenticator = new Authenticator();
+    const token = authenticator.generateToken({
+      id: user.id,
+    });
 
-        const hashManager = new HashManager();
-        const isPasswordCorrect = await hashManager.compare(password, user.password);
-
-        if(!isPasswordCorrect) {
-            throw new Error ("Usuário ou senha incorretos")
-        }
-
-        const authenticator = new Authenticator();
-        const token = authenticator.generateToken({
-            id: user.id
-        });
-
-        return token;
-    }
+    return token;
+  }
 }
