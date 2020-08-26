@@ -3,7 +3,7 @@ import { BaseDatabase } from "./BaseDatabase";
 export class FriendDatabase extends BaseDatabase {
   private static TABLE_NAME: string = "Friendship";
 
-  public async friend(user_id: string, friend_id: string): Promise<void> {
+  public async makeFriendship(user_id: string, friend_id: string): Promise<void> {
     await this.getConnection()
       .insert({
         user_id,
@@ -11,8 +11,8 @@ export class FriendDatabase extends BaseDatabase {
       })
       .into(FriendDatabase.TABLE_NAME);
   }
-
-  public async unfollowFriend(
+  
+  public async undoFriendship(
     user_id: string,
     friend_id: string
   ): Promise<void> {
@@ -21,6 +21,20 @@ export class FriendDatabase extends BaseDatabase {
       .from(FriendDatabase.TABLE_NAME)
       .where({ friend_id })
       .andWhere({ user_id });
+  }
+
+  public async getFriendshipById(id: string) :Promise<any> {
+    const result = await this.getConnection()
+      .select("*")
+      .from(FriendDatabase.TABLE_NAME)
+      .where({
+        user_id: id
+      })
+      .orWhere({
+        friend_id: id
+      })
+
+      return result;
   }
 
   //   public async getFeed(user_id: string): Promise<any> {
