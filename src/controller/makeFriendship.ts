@@ -22,6 +22,21 @@ export const makeFriendship = async (req: Request, res: Response) => {
     const authenticator = new Authenticator();
     const authenticationData = authenticator.getData(token);
 
+    // const friendshipDatabase = new FriendDatabase();
+    // const friendship = await friendshipDatabase.getFriendshipById(
+    //   authenticationData.id
+    // );
+
+    // const relations = friendship.find((relation) => {
+    //   return (
+    //     relation.user_id === userFriendId || relation.friend_id === userFriendId
+    //   );
+    // });
+
+    // if (relations) {
+    //   throw new Error("Amizade já existente!");
+    // }
+
     const followDatabase = new FriendDatabase();
     await followDatabase.makeFriendship(authenticationData.id, userFriendId);
 

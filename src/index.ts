@@ -3,6 +3,7 @@ import { AddressInfo } from "net";
 import dotenv from "dotenv";
 import { userRouter } from "./routes/userRouter";
 import { postRouter } from "./routes/postRouter";
+import { feedRouter } from "./routes/feedRouter";
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ app.use(express.json());
 
 app.use("/user", userRouter);
 app.use("/post", postRouter);
+app.use("/feed", feedRouter);
 
 app.get("/teste", async (req: Request, res: Response) => {
   try {
