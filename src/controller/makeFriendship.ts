@@ -3,12 +3,12 @@ import { Authenticator } from "../services/Authenticator";
 import { FriendDatabase } from "../data/FriendDataBase";
 import { UserDatabase } from "../data/UserDatabase";
 
-export const friend = async (req: Request, res: Response) => {
+export const makeFriendship = async (req: Request, res: Response) => {
   try {
     const userFriendId = req.body.userFriendId;
     const token = req.headers.authorization as string;
 
-    if (!userFriendId) {
+    if (!userFriendId || userFriendId === "") {
       throw new Error("Verifique se os campos estão completos");
     }
 
@@ -23,7 +23,7 @@ export const friend = async (req: Request, res: Response) => {
     const authenticationData = authenticator.getData(token);
 
     const followDatabase = new FriendDatabase();
-    await followDatabase.friend(authenticationData.id, userFriendId);
+    await followDatabase.makeFriendship(authenticationData.id, userFriendId);
 
     res.status(200).send({
       message: "Seguindo usuário",

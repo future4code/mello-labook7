@@ -3,7 +3,7 @@ import { Authenticator } from "../services/Authenticator";
 import { FriendDatabase } from "../data/FriendDataBase";
 import { UserDatabase } from "../data/UserDatabase";
 
-export const unfollow = async (req: Request, res: Response) => {
+export const undoFriendship = async (req: Request, res: Response) => {
   try {
     const userToUnfollowId = req.body.userToUnfollowId;
     const token = req.headers.authorization as string;
@@ -25,7 +25,7 @@ export const unfollow = async (req: Request, res: Response) => {
     const authenticationData = authenticator.getData(token);
 
     const friendDatabase = new FriendDatabase();
-    await friendDatabase.unfollowFriend(
+    await friendDatabase.undoFriendship(
       authenticationData.id,
       userToUnfollowId
     );

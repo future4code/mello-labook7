@@ -23,7 +23,7 @@ export class UserBusiness {
       }
 
       const idGenerator = new IdGenerator();
-      const id = idGenerator.generate();
+      const id = idGenerator.generateId();
 
       const hashManager = new HashManager();
       const hashPassword = await hashManager.hash(password);
