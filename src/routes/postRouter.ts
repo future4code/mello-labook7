@@ -1,6 +1,7 @@
 import express from "express";
-import { createPost } from "../controller/createPost";
+import { PostController } from "../controller/PostController";
 
 export const postRouter = express.Router();
+const postController = new PostController();
 
-postRouter.post("/", createPost);
+postRouter.post("/", postController.createPost);

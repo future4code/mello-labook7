@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import { userRouter } from "./routes/userRouter";
 import { postRouter } from "./routes/postRouter";
 import { feedRouter } from "./routes/feedRouter";
+import { friendshipRouter } from "./routes/friendshipRouter"
+
 
 dotenv.config();
 
@@ -13,6 +15,7 @@ app.use(express.json());
 app.use("/user", userRouter);
 app.use("/post", postRouter);
 app.use("/feed", feedRouter);
+app.use("/friendship", friendshipRouter)
 
 app.get("/teste", async (req: Request, res: Response) => {
   try {
