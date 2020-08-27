@@ -1,11 +1,13 @@
 import moment from "moment";
 import { BaseDatabase } from "./BaseDatabase";
+import { PostFeedInputDTO, PostAndUserNameOutputDTO } from "../model/Post";
 
 export class PostDatabase extends BaseDatabase {
   private static TABLE_NAME: string = "Post";
 
   public async createPost(
     id: string,
+    photo: string,
     description: string,
     createAt: moment.Moment,
     creator_id: string,
@@ -14,6 +16,7 @@ export class PostDatabase extends BaseDatabase {
     await this.getConnection()
       .insert({
         id,
+        photo,
         description,
         createAt: moment(createAt, "DD/MM/YYYY").format("YYYY-MM-DD"),
         creator_id,
@@ -22,55 +25,34 @@ export class PostDatabase extends BaseDatabase {
       .into(PostDatabase.TABLE_NAME);
   }
 
-  //   public async getRecipeById(id: string): Promise<any> {
-  //     const result = await this.getConnection()
-  //       .select("*")
-  //       .from(RecipeDatabase.TABLE_NAME)
-  //       .where({ id });
-  //     return result[0];
-  //   }
+  public async getPostInfoAndUserName(
+    feedInput: PostFeedInputDTO,
+    postsPerPage: number,
+    offset: number
+  ): Promise<PostAndUserNameOutputDTO[]> {
+    const result = await this.getConnection().raw(`
+    select p.*, u.name from Post p
+    JOIN User u
+    ON p.creator_id = u.id
+    WHERE p.type LIKE "%${feedInput.postType}%"
+    ORDER BY ${feedInput.orderBy} ${feedInput.orderType}
+    LIMIT ${postsPerPage}
+    OFFSET ${offset};
+    `);
 
-  //   public async checkRecipeOwnership(
-  //     recipeId: string,
-  //     userId: string
-  //   ): Promise<boolean> {
-  //     const res = await this.getConnection()(RecipeDatabase.TABLE_NAME)
-  //       .count("id as count")
-  //       .where({ id: recipeId })
-  //       .andWhere({ user_id: userId });
-  //     return Boolean(res[0].count);
-  //   }
+    const posts: PostAndUserNameOutputDTO[] = [];
 
-  //   public async editRecipe2(
-  //     id: string,
-  //     title: string,
-  //     description: string
-  //   ): Promise<void> {
-  //     await this.getConnection()(RecipeDatabase.TABLE_NAME)
-  //       .update({
-  //         title,
-  //         description,
-  //       })
-  //       .where({ id });
-  //   }
+    for (let post of result[0]) {
+      posts.push({
+        id: post.id,
+        photo: post.photo,
+        description: post.description,
+        createAt: moment(post.createAt).format("DD/MM/YYYY"),
+        creator_id: post.creator_id,
+        type: post.type,
+      });
+    }
 
-  //   public async editRecipe(
-  //     recipeId: string,
-  //     title: string,
-  //     description: string,
-  //     userId: string
-  //   ): Promise<boolean> {
-  //     const response = await this.getConnection().raw(`
-  //       UPDATE Recipes
-  //       SET
-  //         title = IF (user_id = '${userId}', '${title}', title),
-  //         description = IF (user_id = '${userId}', '${description}', description)
-  //       WHERE id = '${recipeId}';
-  //     `);
-  //     return Boolean(response[0].affectedRows);
-  //   }
-
-  //   public async deleteRecipe(id: string): Promise<void> {
-  //     await this.getConnection()(RecipeDatabase.TABLE_NAME).del().where({ id });
-  //   }
+    return posts;
+  }
 }
