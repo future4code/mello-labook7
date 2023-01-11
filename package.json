@@ -32,7 +32,7 @@
     "@types/uuid": "^8.3.0",
     "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
-    "knex": "^0.21.5",
+    "knex": "^2.4.0",
     "ts-node-dev": "^1.0.0-pre.57",
     "uuid": "^8.3.0"
   }
